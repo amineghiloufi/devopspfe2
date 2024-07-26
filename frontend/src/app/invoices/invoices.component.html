@@ -1,0 +1,38 @@
+<app-navbar></app-navbar>
+
+<div *ngIf="isAgency">
+    <div>
+      <table class="table table-bordered table-dark" style="text-align: center;">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Of Contract</th>
+            <th scope="col">Reference</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Creation Date</th>
+            <th scope="col">Vehicle</th>
+            <th scope="col">Total Payment</th>
+          </tr>
+        </thead>
+        <tbody *ngFor="let invoice of invoices">
+          <tr>
+            <th scope="row">{{ invoice.invoiceId }}</th>
+            <td (click)="onSelectInvoice(invoice)">{{ invoice.reference }}</td>
+            <td (click)="onSelectInvoice(invoice)">{{ invoice.customerName }}</td>
+            <td (click)="onSelectInvoice(invoice)">{{ invoice.creationDate }}</td>
+            <td (click)="onSelectInvoice(invoice)">{{ invoice.vehicleDescription }}</td>
+            <td (click)="onSelectInvoice(invoice)">{{ invoice.totalPayment }}</td>
+            <td>
+                <button class="btn btn-outline-danger" (click)="onDeleteInvoice(invoice.invoiceId)">
+                  <i class="bi bi-trash3-fill"></i>
+                </button>
+            </td>
+          </tr>
+          <tr *ngIf="invoices.length == 0">
+            <td colspan="6" class="text-center">No invoices found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button [hidden]="true" type="button" id="openInvoiceInfo" data-toggle="modal" data-target="#viewInvoiceModal"></button>
+  </div>

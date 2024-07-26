@@ -1,0 +1,23 @@
+.gradient-custom {
+  /* fallback for old browsers */
+  background: #0a647b;
+
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(to right, rgba(10,100,123,1), rgba(22,28,34,1));
+
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(to right, rgba(10,100,123,1), rgba(22,28,34,1))
+}
+.about{
+  margin-top: 3%;
+}
+.contact{
+  margin-top: 3%;
+}
+.homef{
+  margin-top: 9%;
+}
+.btnf{
+  width: 100px;
+  height: 150px;
+}

@@ -1,0 +1,117 @@
+<app-navbar></app-navbar>
+
+<div *ngIf="isAgency">
+    <div>
+        <div class="table-header">
+            <button type="button" class="btn btn-primary addbutton" data-toggle="modal" data-target="#addCategoryModal">
+                <i class="bi bi-plus-circle-fill"></i>  Add New Category
+            </button>
+        </div>
+        <table class="table table-bordered table-dark" style="text-align: center;">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let appCategory of categories">
+                <tr class="text-center" style="text-align: center;">
+                    <td>{{ appCategory?.categoryId }}</td>
+                    <td>{{ appCategory?.categoryName }}</td>
+                    <td>{{ appCategory?.categoryType }}</td>
+                    <td>
+                        <button class="btn btn-outline-info" (click)="onEditCategory(appCategory)">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" (click)="onDeleteCategory(appCategory.categoryId)">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="categories.length == 0">
+                    <td colspan="6" class="text-center">No contraventions found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <button [hidden]="true" type="button" id="openCategoryEdit" data-toggle="modal" data-target="#editCategoryModal">
+        <span class="sr-only">Open Edit Category Modal</span>
+    </button>
+
+    <!-- model add category -->
+    <div [hidden]="!isAgency" class="modal draggable fade bd-example-modal-lg" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center">New Category</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <form #newCategoryForm="ngForm" (ngSubmit)="onAddNewCategory(newCategoryForm)">
+                            <div class="form-group">
+                                <label for="categoryName">Category Name</label>
+                                <input type="text" name="categoryName" required ngModel class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="categoryType">Category Type</label>
+                                <select id="categoryType" name="categoryType" required ngModel
+                                    class="form-control">
+                                    <option value="Tourism">Tourism</option>
+                                    <option value="Utility">Utility</option>
+                                </select>
+                            </div>
+                            <button type="submit" style="display: none;" id="new-category-save">
+                                <span class="sr-only">Save Category</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="new-category-close">Close</button>
+                    <button type="button" (click)="saveNewCategory()" [disabled]="newCategoryForm.invalid" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal edit category -->
+
+    <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCategoryModalLabel">Edit {{editCategory?.categoryName}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="">
+                        <form #editCategoryForm="ngForm">
+                            <div class="form-group">
+                                <label for="categoryName">New Category Name</label>
+                                <input type="text" name="categoryName" required [(ngModel)]="editCategory.categoryName" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="categoryType">Category Type</label>
+                                <select name="categoryType" [(ngModel)]="editCategory.categoryType" class="form-control">
+                                    <option value="Tourism">Tourism</option>
+                                    <option value="Utility">Utility</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeEditCategoryModalButton">Close</button>
+                    <button type="button" (click)="onUpdateCategory()" [disabled]="editCategoryForm.invalid" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

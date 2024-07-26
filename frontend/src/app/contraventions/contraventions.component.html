@@ -1,0 +1,127 @@
+<app-navbar></app-navbar>
+
+<div *ngIf="isAgency">
+    <div class="tableee">
+      <div class="table-header">
+        <button type="button" class="btn btn-primary addbutton" data-toggle="modal" data-target="#addContraventionModal">
+          <i class="bi bi-plus-circle-fill"></i>  Add New Contravention
+        </button>
+      </div>
+      <table class="table table-bordered table-dark" style="text-align: center;">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Customer Name</th>
+            <th scope="col">Date Of Issue</th>
+            <th scope="col">Description</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody *ngFor="let appContravention of contraventions">
+          <tr class="text-center" style="text-align: center;">
+            <td> {{ appContravention?.contraventionId }}</td>
+            <td> {{ appContravention?.customerFullName}}</td>
+            <td> {{ appContravention?.contraventionDate }}</td>
+            <td> {{ appContravention?.contraventionDescription }}</td>
+            <td>
+              <span [hidden]="!appContravention?.active" class="bi bi-check-square-fill">  Active</span>
+              <span [hidden]="appContravention?.active" class="bi bi-x-square-fill">  Inactive</span>
+            </td>
+            <td>
+                <button isAgency class="btn btn-outline-info" (click)="onEditContravention(appContravention)">
+                <i class="bi bi-pencil-fill"></i>
+                </button>
+                <button class="btn btn-outline-danger" (click)="onDeleteContravention(appContravention.contraventionId)">
+                  <i class="bi bi-trash3-fill"></i>
+                </button>
+            </td>
+          </tr>
+          <tr *ngIf="contraventions.length == 0">
+            <td colspan="6" class="text-center">No contraventions found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button [hidden]="true" type="button" id="openContraventionEdit" data-toggle="modal" data-target="#editContraventionModal"></button>
+
+    <!-- model add contravention -->
+    <div [hidden]="!isAgency" class="modal draggable fade bd-example-modal-lg" id="addContraventionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title text-center">New Contravention</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  <div>
+                      <form #newContraventionForm="ngForm" (ngSubmit)="onAddNewContravention(newContraventionForm)">
+                        <div class="form-group">
+                          <label for="customerFullName">Customer Full Name</label>
+                          <input type="text" name="customerFullName" required ngModel class="form-control">
+                        </div>
+                      
+                          <div class="form-group">
+                              <label for="contraventionDescription">Description</label>
+                              <input type="text" name="contraventionDescription" required ngModel class="form-control">
+                          </div>
+                          <button type="submit" style="display: none;" id="new-contravention-save">
+                            <span class="sr-only">Save Contravention</span>
+                        </button>
+                      </form>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" id="new-contravention-close">Close</button>
+                  <button type="button" (click)="saveNewContravention()" [disabled]="newContraventionForm.invalid" class="btn btn-primary">Create Contravention</button>
+                </div>
+          </div>
+      </div>
+  </div>
+
+    <!-- modal edit contravention -->
+
+  <div class="modal fade" id="editContraventionModal" tabindex="-1" role="dialog" aria-labelledby="editContraventionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editContraventionModalLabel">Edit Contravention N°{{editContravention?.contraventionId}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="">
+            <form #editContraventionForm="ngForm">
+              <div class="form-group">
+                <label for="customerFullName" class="col-sm-2 col-form-label">Customer: </label>
+                <div class="col-sm-10">
+                  <input type="text" readonly class="form-control-plaintext" id="customerFullName" value=" {{ editContravention.customerFullName }} ">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="contraventionDescription" class="col-sm-2 col-form-label">Description: </label>
+                <div class="col-sm-10">
+                  <input type="text" readonly class="form-control-plaintext" id="contraventionDescription" value=" {{ editContravention.contraventionDescription }} ">
+                </div>
+              </div>
+              <fieldset class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input name="active" type="checkbox" [(ngModel)]="editContravention.active" class="form-check-input">Active
+                    </label>
+                </div>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeEditContraventionModalButton">Close</button>
+          <button type="button" (click)="onUpdateContravention()" [disabled]="editContraventionForm.invalid" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

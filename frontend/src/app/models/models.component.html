@@ -1,0 +1,99 @@
+<app-navbar></app-navbar>
+
+<div>
+  <table class="table table-bordered table-dark" style="text-align: center;">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Of Brand</th>
+        <th scope="col">Of Category</th>
+        <th scope="col">Model Name</th>
+        <th scope="col">Version</th>
+        <th scope="col">Year</th>
+        <th scope="col">Horse Power (HP)</th>
+        <th scope="col">Status</th>
+        <th scope="col">Actions
+          <button class="btn btn-sm btn-outline-info ml-2" title="Add New Model" data-toggle="modal" data-target="#addModelModal">
+            <i class="bi bi-plus" style="color: #1a9ec9;"></i>
+          </button>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let model of models">
+        <td>{{ model?.modelId }}</td>
+        <td>{{ model?.brand.brandName }}</td>
+        <td>{{ model?.category.categoryName }}</td>
+        <td>{{ model?.name }}</td>
+        <td>{{ model?.version }}</td>
+        <td>{{ model?.year }}</td>
+        <td>{{ model?.horsePower }}</td>
+        <td>
+          <span [ngClass]="{'available-status': model?.active, 'unavailable-status': !model?.active}">
+            {{ model.active ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td>
+          <div class="d-flex align-items-center">
+            <input type="checkbox" class="toggle-switch" id="modelActiveToggle{{ model.modelId }}" [(ngModel)]="model.active" (change)="deactivateModel(model)">
+            <label class="toggle-label" for="modelActiveToggle{{ model.modelId }}"></label>
+            <div>
+              <button class="btn btn-sm btn-danger" (click)="onDeleteModel(model.modelId)">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Add New Brand Modal -->
+<div class="modal draggable fade bd-example-modal-lg" id="addModelModal" tabindex="-1" role="dialog" aria-labelledby="addModelModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-center">New Model</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <form #addModelForm="ngForm" (ngSubmit)="onAddNewModel(addModelForm)">
+            <div class="form-group">
+              <label for="ofBrand">Brand's Name</label>
+              <input type="text" name="ofBrand" class="form-control" id="ofBrandInput" required [(ngModel)]="brandName">
+            </div>
+            <div class="form-group">
+              <label for="ofCategory">Category's Name</label>
+              <input type="text" name="ofCategory" class="form-control" id="ofCategoryInput" required [(ngModel)]="categoryName">
+            </div>
+            <div class="form-group">
+              <label for="modelName">Model's Name</label>
+              <input type="text" name="modelName" class="form-control" id="modelNameInput" required [(ngModel)]="name">
+            </div>
+            <div class="form-group">
+              <label for="version">Model's Version</label>
+              <input type="text" name="version" class="form-control" id="versionInput" required [(ngModel)]="version">
+            </div>
+            <div class="form-group">
+              <label for="year">Model's Year</label>
+              <input type="text" name="year" class="form-control" id="yearInput" required [(ngModel)]="year">
+            </div>
+            <div class="form-group">
+              <label for="horsePower">Horse Power (in HP)</label>
+              <input type="text" name="horsePower" class="form-control" id="horsePowerInput" required [(ngModel)]="horsePower">
+            </div>
+            <button type="submit" style="display: none;" id="new-model-save"></button>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-dismiss="modal" id="new-model-close">Close</button>
+        <button type="button" (click)="saveNewModel()" [disabled]="addModelForm.invalid" class="btn btn-dark">Create Model</button>
+      </div>
+    </div>
+  </div>
+</div>

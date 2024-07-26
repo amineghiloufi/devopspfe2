@@ -1,0 +1,17 @@
+.modal-body{
+display: flex;
+flex-direction: column;
+justify-content: space-evenly;
+}
+.ppp{
+    box-shadow: 0px 1.5px 0px 0px gray;
+}
+.nnn{
+    box-shadow: 0px 1.5px 0px 0px gray;
+}
+.container{
+    width: 1920px;
+}
+.tabloo{
+    width: 1920px;
+}

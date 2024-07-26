@@ -1,0 +1,245 @@
+<app-navbar></app-navbar>
+
+<div>
+  <table class="table table-bordered table-dark" style="text-align: center;">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Brand Name</th>
+        <th scope="col">Category Names</th>
+        <th scope="col">Actions
+          <button class="btn btn-sm btn-outline-info ml-2" title="Add New Brand" data-toggle="modal" data-target="#addBrandModal">
+            <i class="bi bi-plus" style="color: #1a9ec9;"></i>
+          </button>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let brand of brands">
+        <td>{{ brand?.brandId }}</td>
+        <td>{{ brand?.brandName }}</td>
+        <td>
+          <ng-container *ngFor="let category of brand?.categories; let last = last">
+            {{category.categoryName}}<span *ngIf="!last">;</span>
+          </ng-container>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-secondary ml-2" title="Edit This Brand" (click)="onEditBrand(brand)">
+            <i class="bi bi-pencil-square"></i>
+          </button>
+          <button class="btn btn-sm btn-danger ml-2" (click)="onDeleteBrand(brand.brandId)">
+            <i class="bi bi-trash-fill"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<button [hidden]="true" type="button" id="openBrandEdit" data-toggle="modal" data-target="#editBrandModal" title="Edit this brand"></button>
+
+<!-- Add New Brand Modal -->
+<div class="modal draggable fade bd-example-modal-lg" id="addBrandModal" tabindex="-1" role="dialog" aria-labelledby="addBrandModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title text-center">New Brand</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <div>
+                  <form #addBrandForm="ngForm" (ngSubmit)="onAddNewBrand(addBrandForm)">
+                      <div class="form-group">
+                        <label for="newBrandName">Name</label>
+                        <input type="text" name="newBrandName" class="form-control" id="newBrandNameInput" required [(ngModel)]="newBrandName">
+                      </div>
+                      <div *ngFor="let category of newCategories; let i = index; trackBy: trackByFn">
+                        <div class="form-group">
+                          <label for="categoryName{{ i }}">Categories</label>
+                          <div class="input-group">
+                            <input type="text" name="categoryName{{ i }}" class="form-control" id="categoryNames" required [(ngModel)]="newCategories[i]">
+                            <div class="input-group-append">
+                              <button class="btn btn-outline-secondary" type="button" (click)="addCategoryInput()">
+                                <i class="bi bi-plus"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <button type="submit" style="display: none;" id="new-brand-save"></button>
+                  </form>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-dismiss="modal" id="new-brand-close">Close</button>
+            <button type="button" (click)="saveNewBrand()" [disabled]="addBrandForm.invalid" class="btn btn-dark">Create Brand</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Edit Brand Modal -->
+<div class="modal fade" id="editBrandModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="editBrandModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editBrandModalLabel">Edit {{ editBrand?.brandName }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" title="close this">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="ppp">ID : {{ editBrand?.brandId }}</p>
+        <p class="nnn">Brand Name : {{ editBrand?.brandName }}</p>
+        <p class="ccc">Categories :</p>
+        <ul>
+          <li *ngFor="let category of editBrand?.categories; let last = last">
+            {{category.categoryName}}<span *ngIf="!last">;</span>
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" (click)="onEditBrandName()" title="Edit the brand's name">
+          <i class="bi bi-spellcheck"></i>   Edit Name
+        </button>
+        <button type="button" class="btn btn-dark" (click)="onAddBrandToCategory()" title="Add to another category">
+          <i class="bi bi-plus-square-dotted"></i>   Add To Category
+        </button>
+        <button type="button" class="btn btn-dark" (click)="onMoveBrandToCategory()" title="move it">
+          <i class="bi bi-arrows-move"></i>   Move To Another Category
+        </button>
+        <button type="button" class="btn btn-dark" (click)="onRemoveBrandFromCategory()" title="remove it">
+          <i class="bi bi-folder-x"></i>   Remove From Category
+        </button>
+        <!--<button type="button" class="btn btn-outline-dark" data-dismiss="modal" title="close it">
+          <i class="bi bi-x-square"></i>   Close
+        </button>-->
+      </div>
+    </div>
+  </div>
+</div>
+<button [hidden]="true" type="button" id="openBrandEditName" data-toggle="modal" data-target="#editBrandNameUpdateModal" title="do it"></button>
+<button [hidden]="true" type="button" id="openMoveBrandModal" data-toggle="modal" data-target="#MoveBrandModal" title="do it again"></button>
+<button [hidden]="true" type="button" id="openAddBrandToCategoryModal" data-toggle="modal" data-target="#addToAnotherCategoryModal" title="another"></button>
+<button [hidden]="true" type="button" id="openRemoveBrandFromCategoryModal" data-toggle="modal" data-target="#removeFromCategory" title="remove"></button>
+<!-- Update Brand Name Modal -->
+<div class="modal fade" id="editBrandNameUpdateModal" tabindex="-1" role="dialog" aria-labelledby="editBrandNameUpdateModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editBrandNameModal">Edit Name</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" title="just close it">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #editBrandNameForm>
+          <div class="form-group">
+            <label for="currentBrandName">Current Name</label>
+            <input type="text" name="currentBrandName" class="form-control" id="currentBrandName" required [(ngModel)]="currentBrandUpdateName.brandName" disabled="true">
+          </div>
+          <div class="form-group">
+            <label for="newBrandName">New Name</label>
+            <input type="text" name="newBrandName" class="form-control" id="newBrandName" required [(ngModel)]="newBrandName">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeUpdateBrandNameButton" title="cancel it">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="onUpdateBrandName()" title="update it">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Move brand modal -->
+<div class="modal fade" id="MoveBrandModal" tabindex="-1" role="dialog" aria-labelledby="MoveBrandModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="moveBrandToCategoryModal">Move To</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" title="just close it">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #moveBrandForm>
+          <div class="form-group">
+            <label for="currentBrandName">Current Brand Name</label>
+            <input type="text" name="currentBrandName" class="form-control" id="currentBrandName" required [(ngModel)]="currentBrandMoveBrand.brandName" disabled="true">
+          </div>
+          <div class="form-group">
+            <label for="fromCategory">From (Category Name)</label>
+            <input type="text" name="fromCategory" class="form-control" id="fromCategory" required [(ngModel)]="fromCategoryName">
+          </div>
+          <div class="form-group">
+            <label for="toCategory">To (Category Name)</label>
+            <input type="text" name="toCategory" class="form-control" id="toCategory" required [(ngModel)]="toCategoryName">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeMoveBrandButton" title="CancelThis">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="onMoveBrand()" title="Move The Brand">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Add Brand To A Category Modal -->
+<div class="modal fade" id="addToAnotherCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addToAnotherCategoryModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addToAnotherCategoryModal">Add To Another Category</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" title="just close it">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #addToCategoryForm>
+          <div class="form-group">
+            <label for="currentBrandName">Brand's Name</label>
+            <input type="text" name="currentBrandName" class="form-control" id="currentBrandName" required [(ngModel)]="currentBrandAddToCategory.brandName" disabled="true">
+          </div>
+          <div class="form-group">
+            <label for="toCategory">To (Category Name)</label>
+            <input type="text" name="toCategory" class="form-control" id="toCategoryName" required [(ngModel)]="toCategoryName">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeAddBrandToCategoryModal" title="cancel it">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="onAddToCategory()" title="update it">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Remove Brand From A Category Modal -->
+<div class="modal fade" id="removeFromCategory" tabindex="-1" role="dialog" aria-labelledby="removeFromCategory" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="removeFromCategory">Remove From A Category</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" title="just close it">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #addToCategoryForm>
+          <div class="form-group">
+            <label for="currentBrandName">Brand's Name</label>
+            <input type="text" name="currentBrandName" class="form-control" id="currentBrandName" required [(ngModel)]="currentBrandRemoveFromCategory.brandName" disabled="true">
+          </div>
+          <div class="form-group">
+            <label for="fromCategoryName">From (Category Name)</label>
+            <input type="text" name="fromCategoryName" class="form-control" id="fromACategoryName" required [(ngModel)]="currentCategoryName">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeRemoveBrandFromCategoryModal" title="cancel it">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="onRemoveFromCategory()" title="update it">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,167 @@
+---
+- hosts: web
+  become: yes
+  tasks:
+    - name: Update all packages
+      yum:
+        name: "*"
+        state: latest
+
+    - name: Check if Docker is installed
+      command: which docker
+      register: docker_installed
+      failed_when: false
+
+    - name: Install Docker if not present
+      yum:
+        name: docker
+        state: present
+      when: docker_installed.rc != 0
+
+    - name: Verify Docker installation
+      command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Display Docker version
+      debug:
+        msg: "Docker version: {{ docker_version.stdout }}"
+
+    - name: Check Docker service status
+      command: systemctl is-active docker
+      register: docker_service_status
+      failed_when: false
+
+    - name: Start Docker service if not running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+      when: docker_service_status.stdout != 'active'
+
+    - name: Check if ec2-user is in docker group
+      command: groups ec2-user
+      register: ec2_user_groups
+
+    - name: Add ec2-user to docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+      when: "'docker' not in ec2_user_groups.stdout"
+
+    - name: Remove any container running on port 4444
+      shell: |
+        CONTAINERS=$(docker ps -q --filter "publish=4444")
+        if [ -n "$CONTAINERS" ]; then
+          docker rm -f $CONTAINERS
+        fi
+
+    - name: Pull Docker image
+      command: docker pull jegoniseghiloufi/pfe:latest
+
+    - name: Check if PostgreSQL client is installed
+      command: which psql
+      register: psql_installed
+      failed_when: false
+
+    - name: Install PostgreSQL client if not present
+      yum:
+        name: postgresql
+        state: present
+      when: psql_installed.rc != 0
+
+    - name: Verify PostgreSQL client installation
+      command: psql --version
+      register: psql_version
+      failed_when: false
+
+    - name: Display psql version
+      debug:
+        msg: "psql version: {{ psql_version.stdout }}"
+
+    - name: Verify PostgreSQL database exists and create if not
+      shell: |
+        PGPASSWORD='jegojego' psql -h pfe.cvio8aq0wi83.eu-west-3.rds.amazonaws.com -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'pfe'" | grep -q 1 || 
+        PGPASSWORD='jegojego' psql -h pfe.cvio8aq0wi83.eu-west-3.rds.amazonaws.com -U postgres -c "CREATE DATABASE pfe"
+      become: yes
+
+    - name: Run Docker container
+      command: docker run -d -p 4444:4444 jegoniseghiloufi/pfe:latest
+
+    - name: Get Docker container ID
+      command: docker ps -q --filter ancestor=jegoniseghiloufi/pfe:latest
+      register: container_id
+
+    - name: Display Docker logs
+      command: docker logs {{ container_id.stdout }}
+
+    - name: Pull Elasticsearch Docker image
+      command: docker pull docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+
+    - name: Pull Logstash Docker image
+      command: docker pull docker.elastic.co/logstash/logstash:7.9.3
+
+    - name: Pull Kibana Docker image
+      command: docker pull docker.elastic.co/kibana/kibana:7.9.3
+
+    - name: Check if Elasticsearch is running and start if not
+      shell: |
+        if docker ps | grep -w elasticsearch; then
+          echo "Elasticsearch is running";
+        elif docker ps -a | grep -w elasticsearch; then
+          docker start elasticsearch;
+          echo "Elasticsearch started";
+        else
+          docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.9.3;
+          echo "Elasticsearch container created and started";
+        fi
+
+    - name: Check if Kibana is running and start if not
+      shell: |
+        if docker ps | grep -w kibana; then
+          echo "Kibana is running";
+        elif docker ps -a | grep -w kibana; then
+          docker start kibana;
+          echo "Kibana started";
+        else
+          docker run -d --name kibana -p 5601:5601 --link elasticsearch:elasticsearch docker.elastic.co/kibana/kibana:7.9.3;
+          echo "Kibana container created and started";
+        fi
+
+    - name: Upload Logstash configuration
+      copy:
+        src: ~/Desktop/MyFiles/Projects/PFEProject/logstash/logstash.conf
+        dest: /home/ec2-user/logstash.conf
+
+    - name: Check if Logstash is running and start if not
+      shell: |
+        if docker ps | grep -w logstash; then
+          echo "Logstash is running";
+        elif docker ps -a | grep -w logstash; then
+          docker start logstash;
+          echo "Logstash started";
+        else
+          docker run -d --name logstash -v /home/ec2-user/logstash.conf:/usr/share/logstash/pipeline/logstash.conf -p 5044:5044 docker.elastic.co/logstash/logstash:7.9.3;
+          echo "Logstash container created and started";
+        fi
+
+    - name: Check if Elasticsearch is running
+      shell: |
+        if docker ps | grep elasticsearch; then
+          echo "Elasticsearch is running";
+        else
+          echo "Elasticsearch failed to start";
+          echo "Elasticsearch logs:";
+          docker logs $(docker ps -aq --filter "name=elasticsearch");
+          exit 1;
+        fi
+
+    - name: Check if Kibana is running
+      shell: |
+        if docker ps | grep kibana; then
+          echo "Kibana is running";
+        else
+          echo "Kibana failed to start";
+          exit 1;
+        fi

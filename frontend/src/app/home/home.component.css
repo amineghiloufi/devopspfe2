@@ -1,0 +1,113 @@
+.wallpaper {
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  position: relative;
+}
+.wallpaper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(110, 124, 141, 0.8),
+    rgba(49, 56, 69, 0.8)
+  );
+}
+.btnl{
+  position: relative;
+  left: 55%;
+  bottom: 40px;
+}
+.btnhome{
+position: relative;
+left: 52px;  
+}
+
+.signuphere{
+  position: relative;
+  left: 180px;
+}
+.signuphere1{
+  position: relative;
+  left: 233px;
+  bottom: 10px;
+}
+
+
+.center-content {
+  position: relative;
+  bottom: 90%;
+  left: 30%;
+}
+
+.gradient-custom {
+  /* fallback for old browsers */
+  background: #0a647b;
+
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(
+    to right,
+    rgba(10, 100, 123, 1),
+    rgba(22, 28, 34, 1)
+  );
+
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(
+    to right,
+    rgba(10, 100, 123, 1),
+    rgba(22, 28, 34, 1)
+  );
+}
+/* .imgh{
+  height: 300px;
+  width: 100%;
+  object-fit: fill;
+} */
+.footer{
+position: relative;
+bottom: 57%;
+}
+
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex&display=swap");
+
+svg {
+	font-family: "Roboto Flex", sans-serif;
+	width: 50%; height: 50%;
+  position: relative;
+  right: 45px;
+}
+svg text {
+	animation: stroke 9s infinite alternate;
+	stroke-width: 2;
+	stroke: #365FA0;
+	font-size: 50px;
+}
+@keyframes stroke {
+	0%   {
+		fill: rgba(72,138,204,0); stroke: rgb(3, 44, 104);
+		stroke-dashoffset: 25%; stroke-dasharray: 0 50%; stroke-width: 2;
+	}
+	70%  {fill: rgba(72,138,204,0); stroke: rgb(6, 39, 90); }
+	80%  {fill: rgba(72,138,204,0); stroke: rgb(36, 63, 104); stroke-width: 3; }
+	100% {
+		fill: rgb(224, 232, 240); stroke: rgba(54,95,160,0);
+		stroke-dashoffset: -25%; stroke-dasharray: 50% 0; stroke-width: 0;
+	}
+}
+
+.contractsHere{
+  position: relative;
+  width: 50%;
+  height: 50%;
+  bottom: 80%;
+  right: 50%px;
+  left: 40%;
+  size: 500px;
+}
+
+.wrapper {background-color: #FFFFFF}

@@ -1,0 +1,1 @@
+ssh -i ~/.ssh/ssh_key_pair ec2-user@13.37.42.42

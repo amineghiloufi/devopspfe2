@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pfe-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pfe
+  template:
+    metadata:
+      labels:
+        app: pfe
+    spec:
+      containers:
+      - name: pfe-container
+        image: jegoniseghiloufi/pfe:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pfe-service
+spec:
+  selector:
+    app: pfe
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+

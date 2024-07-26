@@ -1,0 +1,112 @@
+<app-navbar></app-navbar>
+
+<div>
+    <div class="dropdown mb-3">
+        <button class="btn btn-dark mr-0 button0" (click)="clearFilter()">Clear Filter</button>
+        <button class="btn btn-info dropdown-toggle button1" type="button" id="filterDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Filter
+        </button>
+        <div class="dropdown-menu" aria-labelledby="filterDropdown">
+            <button class="dropdown-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                By Status<i class="bi bi-caret-down-fill btn-sm"></i>
+            </button>
+            <div class="dropdown-menu dropright" aria-labelledby="filterDropdown">
+                <a class="dropdown-item" (click)="filterVehiclesByStatus('Available')">Available</a>
+                <a class="dropdown-item" (click)="filterVehiclesByStatus('Rented')">Rented</a>
+                <a class="dropdown-item" (click)="filterVehiclesByStatus('InRepair')">In Repair</a>
+            </div>
+        </div>
+    </div>
+    <table class="table table-bordered table-dark tabloo" style="text-align: center;">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Vehicle Description</th>
+                <th scope="col">Of Category</th>
+                <th scope="col">Registration Number</th>
+                <th scope="col" class="text-center">Status</th>
+                <th scope="col">Actions
+                    <button class="btn btn-sm btn-outline-info ml-2" title="Add New Vehicle" data-toggle="modal" data-target="#addVehicleModal">
+                        <i class="bi bi-plus" style="color: #1a9ec9;"></i>
+                    </button>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let vehicle of vehicles">
+                <td>{{ vehicle?.vehicleId }}</td>
+                <td>{{ vehicle?.description }}</td>
+                <td>{{ vehicle?.model.category.categoryName }}</td>
+                <td>{{ vehicle?.registrationNumber }}</td>
+                <td class="text-center">
+                    <div class="dropdown">
+                        <button class="btn btn-dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" [class]="getStatusColorClass(vehicle?.vehicleStatus)">
+                            <div [style.color]="getTextColor(vehicle?.vehicleStatus)">
+                                {{ vehicle?.vehicleStatus }} <i class="bi bi-caret-down-fill ml-0"></i>
+                            </div>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" *ngIf="vehicle.vehicleStatus !== 'Available'" (click)="updateStatus(vehicle, 'Available')">Available</a>
+                            <a class="dropdown-item" *ngIf="vehicle.vehicleStatus !== 'Rented'" (click)="updateStatus(vehicle, 'Rented')">Rented</a>
+                            <a class="dropdown-item" *ngIf="vehicle.vehicleStatus !== 'InRepair'" (click)="updateStatus(vehicle, 'InRepair')">In Repair</a>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center ml-4">
+                        <div>
+                            <button class="btn btn-sm btn-danger" (click)="onDeleteVehicle(vehicle.vehicleId)">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Add New Vehicle Modal -->
+<div class="modal draggable fade bd-example-modal-lg" id="addVehicleModal" tabindex="-1" role="dialog" aria-labelledby="addVehicleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-center">New Vehicle</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <form #addNewVehicleForm="ngForm" (ngSubmit)="onAddNewVehicle(addNewVehicleForm)">
+              <div class="form-group">
+                <label for="agency">Agency's Name</label>
+                <input type="text" name="agencyName" class="form-control" id="agencyNameInput" required [(ngModel)]="agencyName">
+              </div>
+              <div class="form-group">
+                <label for="name">Model's Name</label>
+                <input type="text" name="name" class="form-control" id="nameInput" required [(ngModel)]="name">
+              </div>
+              <div class="form-group">
+                <label for="registrationNumber">Registration Number</label>
+                <input type="text" name="registrationNumber" class="form-control" id="registrationNumberInput" required [(ngModel)]="registrationNumber">
+              </div>
+              <div class="form-group">
+                <label for="price">Rental's Pricing</label>
+                <input type="text" name="price" class="form-control" id="priceInput" required [(ngModel)]="price">
+              </div>
+              <div class="form-group">
+                <label for="color">Vehicle's Color</label>
+                <input type="text" name="color" class="form-control" id="colorInput" required [(ngModel)]="color">
+              </div>
+              <button type="submit" style="display: none;" id="new-vehicle-save"></button>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-dismiss="modal" id="new-vehicle-close">Close</button>
+          <button type="button" (click)="saveNewVehicle()" [disabled]="addNewVehicleForm.invalid" class="btn btn-dark">Create Model</button>
+        </div>
+      </div>
+    </div>
+  </div>

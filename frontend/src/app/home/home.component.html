@@ -1,0 +1,32 @@
+<app-navbar></app-navbar>
+<div class="wallpaper">
+  <img src="/assets/images/trythis.jpg" alt="wallpaper" class="imgh">
+  <div *ngIf="isUserLoggedIn()" class="contractsHere">
+    <div class="text-white display-4">
+      <svg>
+        <text x="50%" y="50%" dy=".35em" text-anchor="middle">
+          Contracts Here
+        </text>
+      </svg>
+    </div>
+  </div>
+  <div *ngIf="!isUserLoggedIn()" class="center-content">
+    <a class="btn btn-lg btn-primary ml-3 gradient-custom btnl" routerLink="/login">Login</a>
+    <div class="text-white display-4">
+      <svg>
+        <text x="50%" y="50%" dy=".35em" text-anchor="middle">
+          Welcome to our website
+        </text>
+      </svg>
+    </div>
+    <p class="text-white display-7 signuphere">Don't have an account yet ?</p>
+    <p class="text-white display-7 signuphere1">Sign up here</p>
+
+    <div class="btnhome">
+      <a class="btn btn-lg btn-primary mr-3 gradient-custom" routerLink="/user/registerAgency">Are you an agency ?</a>
+      <a class="btn btn-lg btn-primary ml-3 gradient-custom" routerLink="/user/registerCustomer">Are you a customer ?</a>
+    </div>
+  </div>
+  <app-footer class="footer"></app-footer>
+</div>
+
